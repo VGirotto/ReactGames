@@ -1,11 +1,21 @@
-import Head from 'next/head'
-import { Inter } from 'next/font/google'
-import { Button, CellComponent, Column, ErrorSize, InputNumberField, InputTextField, Row, Table, TextField, Title } from '../styles/global'
-import { Maze, Cell, Position } from '../lib/maze'
-import { useState, useRef } from 'react'
-import WinModal from "../components/WinModal/WinModal"
+import Head from "next/head";
+import { Inter } from "next/font/google";
+import {
+  Button,
+  CellComponent,
+  ErrorSize,
+  InputNumberField,
+  InputTextField,
+  Row,
+  Table,
+  TextField,
+  Title,
+} from "../styles/global";
+import { Maze, Cell, Position } from "../lib/maze";
+import React, { useState, useRef } from "react";
+import WinModal from "../components/WinModal/WinModal";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
 interface GridProps {
   maze: Cell[][];
@@ -16,9 +26,9 @@ export default function Home() {
   const [mazeState, setMazeState] = useState<GridProps>({
     maze: [],
     player: { x: 1, y: 1 },
-    end: { x: 1, y: 1 }
+    end: { x: 1, y: 1 },
   });
-  const [sizeState, setSizeState] = useState(10);
+  const [sizeState, setSizeState] = useState(21);
   const [moveInputState, setMoveInputState] = useState("");
   const [errorSizeState, setErrorSizeState] = useState(false);
   const [showWinModal, setShowWinModal] = useState(false);
@@ -34,22 +44,22 @@ export default function Home() {
         for (let j = 0; j < currentMaze[i].length; j++) {
           cols.push(
             <CellComponent key={`${i}-${j}`} color={getCellColor(i, j)} />
-          )
+          );
         }
-        rows.push(
-          <Row key={i}>
-            {cols}
-          </Row>
-        );
+        rows.push(<Row key={i}>{cols}</Row>);
       }
     }
-    return <Table onClick={() => {
-      if (ref.current) {
-        ref.current.focus();
-      }
-    }}>
-      {rows}
-    </Table>;
+    return (
+      <Table
+        onClick={() => {
+          if (ref.current) {
+            ref.current.focus();
+          }
+        }}
+      >
+        {rows}
+      </Table>
+    );
   };
 
   function getCellColor(i: number, j: number): string {
@@ -57,7 +67,12 @@ export default function Home() {
     const end = mazeState.end!;
     const cell = mazeState.maze[i][j];
 
-    if (player.x === end.x && player.y === end.y && i === player.x && j === player.y) {
+    if (
+      player.x === end.x &&
+      player.y === end.y &&
+      i === player.x &&
+      j === player.y
+    ) {
       return "blue";
     } else if (i === end.x && j === end.y) {
       return "green";
@@ -69,30 +84,34 @@ export default function Home() {
     return "white";
   }
 
-
-
   const onGenerateMaze = () => {
+    if (sizeState % 2 == 0) {
+      setErrorSizeState(true);
+      return;
+    }
     const newMaze = new Maze(sizeState);
-    newMaze.Main()
+    newMaze.Main();
 
     setMazeState({
       maze: newMaze.maze,
       player: { x: 1, y: 1 },
-      end: { x: newMaze.size - 2, y: newMaze.size - 2 }
+      end: { x: newMaze.size - 2, y: newMaze.size - 2 },
     });
 
     if (ref.current) {
       ref.current.focus();
     }
-  }
+
+    setShowWinModal(false);
+  };
 
   function setMazeSize(value: number) {
-    if (value > 1 && value < 41) {
-      setSizeState(value)
-      setErrorSizeState(false)
-    } else {
-      setErrorSizeState(true)
+    if (value > 4 && value < 82) {
+      setSizeState(value);
+      setErrorSizeState(false);
+      return;
     }
+    setErrorSizeState(true);
   }
 
   function getMoveDirection(event: React.KeyboardEvent<HTMLInputElement>) {
@@ -109,35 +128,34 @@ export default function Home() {
       setMoveInputState(event.key);
       move(0, 1);
     }
-
   }
 
   function move(x: number, y: number) {
-    var currentMaze: Cell[][] = mazeState.maze;
-    var playerPos: Position = mazeState.player!;
-    var endPos: Position = mazeState.end!;
+    const currentMaze: Cell[][] = mazeState.maze;
+    const playerPos: Position = mazeState.player!;
+    const endPos: Position = mazeState.end!;
 
-    if ((playerPos.x + x > 0 && playerPos.y + y > 0
-      && playerPos.x + x < endPos.x + 2 && playerPos.y + y < endPos.y + 2)
-      && !currentMaze[playerPos.x + x][playerPos.y + y].isWall
-      || currentMaze[playerPos.x + x][playerPos.y + y].active
-      || playerPos.x + x == endPos.x && playerPos.y + y == endPos.y) {
-
-      checkWin({ x: playerPos.x + x, y: playerPos.y + y }, endPos)
+    if (
+      (playerPos.x + x > 0 &&
+        playerPos.y + y > 0 &&
+        playerPos.x + x < endPos.x + 2 &&
+        playerPos.y + y < endPos.y + 2 &&
+        !currentMaze[playerPos.x + x][playerPos.y + y].isWall) ||
+      currentMaze[playerPos.x + x][playerPos.y + y].active ||
+      (playerPos.x + x == endPos.x && playerPos.y + y == endPos.y)
+    ) {
+      checkWin({ x: playerPos.x + x, y: playerPos.y + y }, endPos);
 
       setMazeState({
         maze: currentMaze,
         player: { x: playerPos.x + x, y: playerPos.y + y },
-        end: endPos
+        end: endPos,
       });
-
     }
-
   }
 
   function checkWin(player: Position, end: Position) {
     if (player.x === end.x && player.y === end.y) {
-      console.log("Finished")
       setShowWinModal(true);
     } else {
       setShowWinModal(false);
@@ -150,34 +168,58 @@ export default function Home() {
         <title>LAByrinth - Maze game</title>
         <meta name="description" content="Play a random generated maze game" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/labyrinth.png" />
       </Head>
 
       <Title>LAByrinth</Title>
 
       <Row>
         <TextField bold>Maze width/height: </TextField>
-        <InputNumberField defaultValue="10" onChange={(event) => { setMazeSize(Number(event.target.value)) }} />
-        {errorSizeState && <ErrorSize>Size must be<br /> between 2 and 40</ErrorSize>}
+        <InputNumberField
+          defaultValue="21"
+          onChange={(event) => {
+            setMazeSize(Number(event.target.value));
+          }}
+        />
+        {errorSizeState ? (
+          sizeState % 2 ? (
+            <ErrorSize>
+              Size must be
+              <br /> between 5 and 81
+            </ErrorSize>
+          ) : (
+            <ErrorSize>
+              Size must be
+              <br /> an odd number
+            </ErrorSize>
+          )
+        ) : (
+          <></>
+        )}
       </Row>
 
-      <Row marginTop='10px'>
+      <Row marginTop="10px">
         <Button onClick={onGenerateMaze}>Generate maze</Button>
       </Row>
 
-      {showWinModal && <WinModal />}
+      {showWinModal && <WinModal size={sizeState} />}
 
       <Grid />
 
       <Row marginTop={"50px"}>
-        <TextField size='18px'>Type A/W/S/D or the Arrow keys to walk through the path</TextField>
+        <TextField size="18px">
+          Type A/W/S/D or the Arrow keys to walk through the path
+        </TextField>
       </Row>
 
       <Row>
-        <InputTextField ref={ref} onKeyDown={getMoveDirection} value={moveInputState} readOnly />
+        <InputTextField
+          ref={ref}
+          onKeyDown={getMoveDirection}
+          value={moveInputState}
+          readOnly
+        />
       </Row>
-
-
     </>
-  )
+  );
 }
