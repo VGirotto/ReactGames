@@ -8,13 +8,13 @@
 - [x] Button to call algorithm and display colored maze
 - [x] Set player and end positions
 - [x] Enable player movement
-- [ ] Show win modal
+- [x] Show win modal
+- [x] Put maze in a frame and resize it
+- [ ] Timer since first move // falta parar o tempo quando termina
 
 
 ## To do
-- Put maze in a frame and enable scroll bars
 - Create a "Restart same maze" button
-- Timer since first move
 - Display final timer in the modal
 - Algorithm to find the solution
 - Button to surrender and show solution

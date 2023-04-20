@@ -3,17 +3,22 @@ import { Inter } from "next/font/google";
 import {
   Button,
   CellComponent,
+  Column,
   ErrorSize,
+  Frame,
   InputNumberField,
   InputTextField,
+  MazeRow,
   Row,
   Table,
   TextField,
+  Timer,
   Title,
 } from "../styles/global";
 import { Maze, Cell, Position } from "../lib/maze";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import WinModal from "../components/WinModal/WinModal";
+import { msToMinutes } from "@/utils/formatter";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,15 +34,17 @@ export default function Home() {
     end: { x: 1, y: 1 },
   });
   const [sizeState, setSizeState] = useState(21);
+  const [actualSize, setActualSizeSize] = useState(21);
   const [moveInputState, setMoveInputState] = useState("");
   const [errorSizeState, setErrorSizeState] = useState(false);
   const [showWinModal, setShowWinModal] = useState(false);
+  const [timerState, setTimerState] = useState(0);
 
   const ref = useRef<HTMLInputElement>(null);
 
   const Grid: React.FC = () => {
     const rows = [];
-    var currentMaze: Cell[][] = mazeState.maze;
+    const currentMaze: Cell[][] = mazeState.maze;
     if (currentMaze) {
       for (let i = 0; i < currentMaze.length; i++) {
         const cols = [];
@@ -46,19 +53,25 @@ export default function Home() {
             <CellComponent key={`${i}-${j}`} color={getCellColor(i, j)} />
           );
         }
-        rows.push(<Row key={i}>{cols}</Row>);
+        rows.push(
+          <MazeRow size={actualSize} key={i}>
+            {cols}
+          </MazeRow>
+        );
       }
     }
     return (
-      <Table
-        onClick={() => {
-          if (ref.current) {
-            ref.current.focus();
-          }
-        }}
-      >
-        {rows}
-      </Table>
+      <Frame>
+        <Table
+          onClick={() => {
+            if (ref.current) {
+              ref.current.focus();
+            }
+          }}
+        >
+          {rows}
+        </Table>
+      </Frame>
     );
   };
 
@@ -89,6 +102,7 @@ export default function Home() {
       setErrorSizeState(true);
       return;
     }
+    setActualSizeSize(sizeState);
     const newMaze = new Maze(sizeState);
     newMaze.Main();
 
@@ -103,6 +117,7 @@ export default function Home() {
     }
 
     setShowWinModal(false);
+    setTimerState(0);
   };
 
   function setMazeSize(value: number) {
@@ -162,16 +177,24 @@ export default function Home() {
     }
   }
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTimerState(timerState + 1000);
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [timerState]);
+
   return (
     <>
       <Head>
-        <title>LAByrinth - Maze game</title>
+        <title>React Maze game</title>
         <meta name="description" content="Play a random generated maze game" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/labyrinth.png" />
       </Head>
 
-      <Title>LAByrinth</Title>
+      <Title>React Maze</Title>
 
       <Row>
         <TextField bold>Maze width/height: </TextField>
@@ -202,9 +225,13 @@ export default function Home() {
         <Button onClick={onGenerateMaze}>Generate maze</Button>
       </Row>
 
-      {showWinModal && <WinModal size={sizeState} />}
+      {showWinModal && <WinModal size={sizeState} time={timerState} />}
 
-      <Grid />
+      <Column>
+        <Timer>Timer: {msToMinutes(timerState)}</Timer>
+
+        <Grid />
+      </Column>
 
       <Row marginTop={"50px"}>
         <TextField size="18px">

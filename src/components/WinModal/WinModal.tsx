@@ -1,7 +1,9 @@
 import { Modal, ModalText, ModalTitle } from "./styles";
+import { msToMinutes } from "@/utils/formatter";
 
 export interface WinModalProps {
   size: number;
+  time: number;
 }
 export default function WinModal(props: WinModalProps) {
   return (
@@ -14,7 +16,7 @@ export default function WinModal(props: WinModalProps) {
         </ModalTitle>
 
         <ModalText>
-          Your time was 00:00 <br />
+          Your time was {msToMinutes(props.time)} <br />
           in a maze {props.size}x{props.size}
         </ModalText>
       </Modal>

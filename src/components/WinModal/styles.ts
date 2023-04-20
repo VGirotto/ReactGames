@@ -21,6 +21,7 @@ export const ModalTitle = styled.div`
   border-style: solid;
   border-color: black;
   border-width: 1px;
+  text-decoration: underline;
 `;
 
 export const ModalText = styled.div`
