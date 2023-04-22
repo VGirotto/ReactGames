@@ -10,6 +10,7 @@ export const Modal = styled.div`
   border-color: black;
   border-style: outset;
   text-align: center;
+  z-index: 1000;
 `;
 
 export const ModalTitle = styled.div`

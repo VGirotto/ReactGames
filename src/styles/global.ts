@@ -7,10 +7,18 @@ interface TextFieldProps {
 
 interface RowProps {
   marginTop?: string;
+  justify?: string;
 }
 
 interface MazeRowProps {
   size: number;
+}
+
+interface ButtonProps {
+  bold?: boolean;
+  size?: string;
+  width?: string;
+  bgcolor?: string;
 }
 
 export const Title = styled.h1`
@@ -30,8 +38,10 @@ export const Row = styled.div<RowProps>`
   margin-top: ${(props) => props.marginTop ?? "0px"};
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  flex-direction: row;
   align-items: center;
+  justify-content: ${(props) => props.justify ?? "center"};
+  width: 100%;
 `;
 
 export const InputNumberField = styled.input.attrs((props) => ({
@@ -48,15 +58,17 @@ export const InputTextField = styled.input.attrs({
   type: "text",
   placeholder: "AWSD",
 })`
-  width: 20%;
+  width: 100px;
   height: 20px;
   text-align: center;
 `;
 
-export const Button = styled.button`
+export const Button = styled.button<ButtonProps>`
   height: 35px;
-  width: 180px;
-  font-weight: 700;
+  width: ${(props) => (props.width ?? "180px")};
+  font-size: ${(props) => (props.size ?? "13px")};
+  font-weight: ${(props) => (props.bold ? "700" : "400")};
+  background-color: ${(props) => (props.bgcolor ?? "#cccccc")};
 `;
 
 export const MazeRow = styled.div<MazeRowProps>`
@@ -90,11 +102,10 @@ export const Frame = styled.div`
 export const Column = styled.div`
   margin-left: auto;
   margin-right: auto;
-  margin-top: 50px;
   display: flex;
-  justify-items: center;
   flex-direction: column;
   align-items: center;
+  width: 500px;
 `;
 
 export const Timer = styled.div`

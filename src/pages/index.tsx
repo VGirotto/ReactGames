@@ -97,20 +97,29 @@ export default function Home() {
     return "white";
   }
 
-  const onGenerateMaze = () => {
+  const onGenerateMaze = (createNew: Boolean) => {
     if (sizeState % 2 == 0) {
       setErrorSizeState(true);
       return;
     }
     setActualSizeSize(sizeState);
-    const newMaze = new Maze(sizeState);
-    newMaze.Main();
+    if (createNew) {
+      const newMaze = new Maze(sizeState);
+      newMaze.Main();
 
-    setMazeState({
-      maze: newMaze.maze,
-      player: { x: 1, y: 1 },
-      end: { x: newMaze.size - 2, y: newMaze.size - 2 },
-    });
+      setMazeState({
+        maze: newMaze.maze,
+        player: { x: 1, y: 1 },
+        end: { x: newMaze.size - 2, y: newMaze.size - 2 },
+      });
+    } else {
+      setMazeState({
+        maze: mazeState.maze,
+        player: { x: 1, y: 1 },
+        end: mazeState.end,
+      });
+    }
+
 
     if (ref.current) {
       ref.current.focus();
@@ -179,11 +188,16 @@ export default function Home() {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
+      if (showWinModal) return;
       setTimerState(timerState + 1000);
     }, 1000);
 
     return () => clearInterval(intervalId);
   }, [timerState]);
+
+  useEffect(() => {
+    onGenerateMaze(true)
+  }, [])
 
   return (
     <>
@@ -196,57 +210,64 @@ export default function Home() {
 
       <Title>React Maze</Title>
 
-      <Row>
-        <TextField bold>Maze width/height: </TextField>
-        <InputNumberField
-          defaultValue="21"
-          onChange={(event) => {
-            setMazeSize(Number(event.target.value));
-          }}
-        />
-        {errorSizeState ? (
-          sizeState % 2 ? (
-            <ErrorSize>
-              Size must be
-              <br /> between 5 and 81
-            </ErrorSize>
-          ) : (
-            <ErrorSize>
-              Size must be
-              <br /> an odd number
-            </ErrorSize>
-          )
-        ) : (
-          <></>
-        )}
-      </Row>
-
-      <Row marginTop="10px">
-        <Button onClick={onGenerateMaze}>Generate maze</Button>
-      </Row>
-
-      {showWinModal && <WinModal size={sizeState} time={timerState} />}
-
       <Column>
-        <Timer>Timer: {msToMinutes(timerState)}</Timer>
+        <Row>
+          <TextField bold>Maze width/height: </TextField>
+          <InputNumberField
+            defaultValue="21"
+            onChange={(event) => {
+              setMazeSize(Number(event.target.value));
+            }}
+          />
+          {errorSizeState ? (
+            sizeState % 2 ? (
+              <ErrorSize>
+                Size must be
+                <br /> between 5 and 81
+              </ErrorSize>
+            ) : (
+              <ErrorSize>
+                Size must be
+                <br /> an odd number
+              </ErrorSize>
+            )
+          ) : (
+            <></>
+          )}
+        </Row>
 
+        <Row marginTop="5px">
+          <Button onClick={() => onGenerateMaze(true)} bold>Generate maze</Button>
+        </Row>
+
+        {showWinModal && <WinModal size={sizeState} time={timerState} />}
+
+        <Row marginTop={"20px"}>
+          <Timer>Timer: {msToMinutes(timerState)}</Timer>
+
+        </Row>
         <Grid />
+
+        <Row marginTop="20px" justify="space-between">
+          <Button width="180px" size="12px" bgcolor="lightblue" onClick={() => onGenerateMaze(false)}>Reset same maze</Button>
+          <Button width="180px" size="12px" bgcolor="#ff9494">Show right path</Button>
+        </Row>
+
+        <Row marginTop={"20px"}>
+          <TextField size="18px">
+            Type A/W/S/D or the Arrow keys to walk through the path
+          </TextField>
+        </Row>
+
+        <Row>
+          <InputTextField
+            ref={ref}
+            onKeyDown={getMoveDirection}
+            value={moveInputState}
+            readOnly
+          />
+        </Row>
       </Column>
-
-      <Row marginTop={"50px"}>
-        <TextField size="18px">
-          Type A/W/S/D or the Arrow keys to walk through the path
-        </TextField>
-      </Row>
-
-      <Row>
-        <InputTextField
-          ref={ref}
-          onKeyDown={getMoveDirection}
-          value={moveInputState}
-          readOnly
-        />
-      </Row>
     </>
   );
 }
