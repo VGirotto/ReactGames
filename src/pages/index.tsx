@@ -16,6 +16,7 @@ import {
   Title,
 } from "../styles/global";
 import { Maze, Cell, Position } from "../lib/maze";
+import { DepthSearchMaze } from "../lib/mazeDepthSearch";
 import React, { useState, useRef, useEffect } from "react";
 import WinModal from "../components/WinModal/WinModal";
 import { msToMinutes } from "@/utils/formatter";
@@ -27,6 +28,11 @@ interface GridProps {
   player?: Position;
   end?: Position;
 }
+
+interface RightPathI {
+  path: Position[];
+}
+
 export default function Home() {
   const [mazeState, setMazeState] = useState<GridProps>({
     maze: [],
@@ -39,6 +45,7 @@ export default function Home() {
   const [errorSizeState, setErrorSizeState] = useState(false);
   const [showWinModal, setShowWinModal] = useState(false);
   const [timerState, setTimerState] = useState(0);
+  const [rightPath, setRightPath] = useState<RightPathI>({ path: [] })
 
   const ref = useRef<HTMLInputElement>(null);
 
@@ -80,6 +87,7 @@ export default function Home() {
     const end = mazeState.end!;
     const cell = mazeState.maze[i][j];
 
+
     if (
       player.x === end.x &&
       player.y === end.y &&
@@ -91,8 +99,10 @@ export default function Home() {
       return "green";
     } else if (i === player.x && j === player.y) {
       return "red";
+    } else if (rightPath.path.some(pos => pos.x == i && pos.y == j)) {
+      return "blue";
     } else if (cell.isWall) {
-      return cell.active ? "white" : "darkcyan";
+      return cell.isActive ? "white" : "darkcyan";
     }
     return "white";
   }
@@ -125,6 +135,7 @@ export default function Home() {
       ref.current.focus();
     }
 
+    setRightPath({ path: [] })
     setShowWinModal(false);
     setTimerState(0);
   };
@@ -165,7 +176,7 @@ export default function Home() {
         playerPos.x + x < endPos.x + 2 &&
         playerPos.y + y < endPos.y + 2 &&
         !currentMaze[playerPos.x + x][playerPos.y + y].isWall) ||
-      currentMaze[playerPos.x + x][playerPos.y + y].active ||
+      currentMaze[playerPos.x + x][playerPos.y + y].isActive ||
       (playerPos.x + x == endPos.x && playerPos.y + y == endPos.y)
     ) {
       checkWin({ x: playerPos.x + x, y: playerPos.y + y }, endPos);
@@ -184,6 +195,14 @@ export default function Home() {
     } else {
       setShowWinModal(false);
     }
+  }
+
+  function getRightPath() {
+    const mazeSolver = new DepthSearchMaze(mazeState.maze);
+
+    setRightPath({
+      path: mazeSolver.findRightPath()
+    })
   }
 
   useEffect(() => {
@@ -250,7 +269,7 @@ export default function Home() {
 
         <Row marginTop="20px" justify="space-between">
           <Button width="180px" size="12px" bgcolor="lightblue" onClick={() => onGenerateMaze(false)}>Reset same maze</Button>
-          <Button width="180px" size="12px" bgcolor="#ff9494">Show right path</Button>
+          <Button width="180px" size="12px" bgcolor="#ff9494" onClick={getRightPath}>Show right path</Button>
         </Row>
 
         <Row marginTop={"20px"}>

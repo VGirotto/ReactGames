@@ -13,8 +13,8 @@
 - [x] Timer since start
 - [x] Display final timer in the modal
 - [x] Create a "Restart same maze" button
-- [ ] Button to surrender and show solution
-- [ ] Algorithm to find the solution
+- [x] Button to surrender and show solution
+- [x] Algorithm to find the solution
 
 
 ## To do
@@ -24,11 +24,17 @@
   - Show start of the maze (maybe display "21x21 Maze")
   - Word "Restarted" when clicked the restart button
   - Win animations
+- Dark/light mode
 
 
 ## Backlog
+- Loading circle (is necessary?)
+- Localization (add other languages)
 - Optimize performance in large maze (?)
 - Add responsiveness
 - Show buttons to move when on mobile (?)
+  
+
+## Doesn't make sense
 - Save player time and maze size
-- Ranking of times per size (makes sense?)
+- Ranking of times per size

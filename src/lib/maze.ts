@@ -1,6 +1,6 @@
 export interface Cell {
   position: Position;
-  active: boolean;
+  isActive: boolean;
   isWall: boolean;
 }
 
@@ -28,7 +28,7 @@ export class Maze {
   badPositions: Position[] = [];
   size: number;
   actual: Cell = {
-    active: false,
+    isActive: false,
     isWall: false,
     position: {
       x: 0,
@@ -51,7 +51,7 @@ export class Maze {
       var column: Cell[] = [];
       for (let j = 0; j < this.size; j++) {
         var cell: Cell = {
-          active: false,
+          isActive: false,
           isWall: i % 2 == 0 || j % 2 == 0,
           position: {
             x: i,
@@ -84,7 +84,7 @@ export class Maze {
     } while (this.actual.position.y === random_end_y || random_end_y % 2 == 0);
 
     // put end cell in the maze
-    this.maze[random_end_x][random_end_y].active = true;
+    this.maze[random_end_x][random_end_y].isActive = true;
 
     // put start cell in the stack
     this.stack.push(this.actual.position);
@@ -102,7 +102,7 @@ export class Maze {
       hasInactiveCell = this.maze.some((v, index) => {
         if (index % 2 !== 0) {
           return v.some((a, i) => {
-            return i % 2 !== 0 && !this.maze[index][i].active;
+            return i % 2 !== 0 && !this.maze[index][i].isActive;
           });
         }
         return false;
@@ -113,7 +113,7 @@ export class Maze {
         var inactiveCells = [];
         for (var x = 1; x < this.size - 1; x += 2) {
           for (var y = 1; y < this.size - 1; y += 2) {
-            if (!this.maze[x][y].active) {
+            if (!this.maze[x][y].isActive) {
               inactiveCells.push({ x: x, y: y });
             }
           }
@@ -133,7 +133,7 @@ export class Maze {
 
   private CreatePath() {
     // create path until reach a cell already in the maze
-    while (!this.actual.active) {
+    while (!this.actual.isActive) {
       var next: Cell | null;
       let dir: Direction | undefined;
       let nextDir: Direction[] = this.directions.slice();
@@ -168,7 +168,7 @@ export class Maze {
     // activate all the path and clean stack
     while (this.stack.length > 0) {
       let removed: Position = this.stack.pop()!;
-      this.maze[removed.x][removed.y].active = true;
+      this.maze[removed.x][removed.y].isActive = true;
     }
 
     this.badPositions = [];
@@ -187,9 +187,9 @@ export class Maze {
 
     // put wall back
     if (pos.x !== this.actual.position.x) {
-      this.maze[(pos.x + this.actual.position.x) / 2][pos.y].active = false;
+      this.maze[(pos.x + this.actual.position.x) / 2][pos.y].isActive = false;
     } else {
-      this.maze[pos.x][(pos.y + this.actual.position.y) / 2].active = false;
+      this.maze[pos.x][(pos.y + this.actual.position.y) / 2].isActive = false;
     }
 
     this.actual = this.maze[pos.x][pos.y];
@@ -229,19 +229,19 @@ export class Maze {
     if (!adj || !this.stack.includes(adj.position)) {
       switch (dir) {
         case Direction.Up:
-          this.maze[this.actual.position.x - 1][this.actual.position.y].active =
+          this.maze[this.actual.position.x - 1][this.actual.position.y].isActive =
             true;
           break;
         case Direction.Right:
-          this.maze[this.actual.position.x][this.actual.position.y + 1].active =
+          this.maze[this.actual.position.x][this.actual.position.y + 1].isActive =
             true;
           break;
         case Direction.Down:
-          this.maze[this.actual.position.x + 1][this.actual.position.y].active =
+          this.maze[this.actual.position.x + 1][this.actual.position.y].isActive =
             true;
           break;
         case Direction.Left:
-          this.maze[this.actual.position.x][this.actual.position.y - 1].active =
+          this.maze[this.actual.position.x][this.actual.position.y - 1].isActive =
             true;
           break;
         default:
@@ -255,13 +255,13 @@ export class Maze {
     for (let i = 0; i < this.size; i++) {
       for (let j = 0; j < this.size; j++) {
         if (this.maze[i][j].isWall) {
-          if (this.maze[i][j].active) {
+          if (this.maze[i][j].isActive) {
             print = print.concat(" ");
           } else {
             print = print.concat("@");
           }
         } else {
-          if (this.maze[i][j].active) {
+          if (this.maze[i][j].isActive) {
             print = print.concat(" ");
           } else {
             print = print.concat(" ");
