@@ -19,6 +19,7 @@
 
 ## To do
 - Refact code, separating in files and components
+- Add random start and end positions
 - Improve the visual of the page
 - Add animations
   - Show start of the maze (maybe display "21x21 Maze")
