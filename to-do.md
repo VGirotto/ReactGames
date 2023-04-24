@@ -17,10 +17,10 @@
 - [x] Algorithm to find the solution
 - [x] Refact code, separating in files and components
 - [x] Fix the Cumulative Layout Shift caused by the validation msg
+- [x] Add random start and end positions
 
 
 ## To do
-- Add random start and end positions
 - Improve the visual of the page
 - Add animations
   - Show start of the maze (maybe display "21x21 Maze")

@@ -42,7 +42,7 @@ export const Grid: React.FC<GridProps> = (props: GridProps) => {
     ) {
       return "blue";
     } else if (i === end.x && j === end.y) {
-      return "green";
+      return "#Bf11ab";
     } else if (i === player.x && j === player.y) {
       return "red";
     } else if (props.rightPath.some((pos) => pos.x == i && pos.y == j)) {

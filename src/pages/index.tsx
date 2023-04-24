@@ -5,7 +5,6 @@ import {
   Column,
   ErrorContainer,
   ErrorSize,
-  InnerColumn,
   InputNumberField,
   InputTextField,
   Row,
@@ -39,12 +38,13 @@ export default function Home() {
     end: { x: 1, y: 1 },
   });
   const [sizeState, setSizeState] = useState(21);
-  const [actualSize, setActualSizeSize] = useState(21);
+  const [actualSize, setActualSize] = useState(21);
   const [moveInputState, setMoveInputState] = useState("");
   const [errorSizeState, setErrorSizeState] = useState(false);
   const [showWinModal, setShowWinModal] = useState(false);
   const [timerState, setTimerState] = useState(0);
   const [rightPath, setRightPath] = useState<RightPathI>({ path: [] });
+  const [startPosition, setStartPosition] = useState<Position>({ x: 0, y: 0 });
 
   const ref = useRef<HTMLInputElement>(null);
 
@@ -54,15 +54,17 @@ export default function Home() {
         setErrorSizeState(true);
         return;
       }
-      setActualSizeSize(sizeState);
+      setActualSize(sizeState);
 
       const newMaze = new Maze(sizeState);
       newMaze.Main();
 
+      let mazeProps: MazeProps = InitStartAndEndPositions(newMaze.maze);
+
       setMazeState({
         maze: newMaze.maze,
-        player: { x: 1, y: 1 },
-        end: { x: newMaze.size - 2, y: newMaze.size - 2 },
+        player: mazeProps.player,
+        end: mazeProps.end,
       });
     } else {
       setMazeState({
@@ -80,6 +82,60 @@ export default function Home() {
     setShowWinModal(false);
     setTimerState(0);
   };
+
+  function InitStartAndEndPositions(maze: Cell[][]): MazeProps {
+    let start: Position = { x: 0, y: 0 };
+    let end: Position = { x: 0, y: 0 };
+
+    let possibles: number[] = [];
+
+    for (let i = 1; i < sizeState - 1; i++) {
+      possibles.push(i);
+    }
+
+    let possibleExtremes: number[] = [1, sizeState - 2];
+
+    do {
+      start.x = possibles[Math.floor(Math.random() * possibles.length)];
+
+      if (possibleExtremes.includes(start.x)) {
+        start.y = possibles[Math.floor(Math.random() * possibles.length)];
+      } else {
+        start.y =
+          possibleExtremes[Math.floor(Math.random() * possibleExtremes.length)];
+      }
+    } while (!maze[start.x][start.y].isActive);
+
+    let minDistance: number = Math.floor(sizeState / 2) - 2;
+
+    do {
+      do {
+        end.x = possibles[Math.floor(Math.random() * possibles.length)];
+      } while (end.x < start.x + minDistance && end.x > start.x - minDistance);
+
+      if (possibleExtremes.includes(end.x)) {
+        do {
+          end.y = possibles[Math.floor(Math.random() * possibles.length)];
+        } while (
+          end.y < start.y + minDistance &&
+          end.y > start.y - minDistance
+        );
+      } else {
+        let pe: number[] = possibleExtremes.filter((value) => {
+          return value != start.y;
+        });
+        end.y = pe[Math.floor(Math.random() * pe.length)];
+      }
+    } while (!maze[end.x][end.y].isActive);
+
+    setStartPosition({ x: start.x, y: start.y });
+
+    return {
+      maze: maze,
+      player: start,
+      end: end,
+    };
+  }
 
   function setMazeSize(value: number) {
     if (value > 4 && value < 82) {
@@ -139,7 +195,11 @@ export default function Home() {
   }
 
   function getRightPath() {
-    const mazeSolver = new DepthSearchMaze(mazeState.maze);
+    const mazeSolver = new DepthSearchMaze(
+      mazeState.maze,
+      startPosition,
+      mazeState.end!
+    );
 
     setRightPath({
       path: mazeSolver.findRightPath(),
