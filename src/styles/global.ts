@@ -10,8 +10,8 @@ interface RowProps {
   justify?: string;
 }
 
-interface MazeRowProps {
-  size: number;
+interface ColumnProps {
+  width?: string;
 }
 
 interface ButtonProps {
@@ -32,6 +32,7 @@ export const TextField = styled.h3<TextFieldProps>`
   color: black;
   font-weight: ${(props) => (props.bold ? "700" : "400")};
   text-align: center;
+  margin: 0px;
 `;
 
 export const Row = styled.div<RowProps>`
@@ -65,38 +66,10 @@ export const InputTextField = styled.input.attrs({
 
 export const Button = styled.button<ButtonProps>`
   height: 35px;
-  width: ${(props) => (props.width ?? "180px")};
-  font-size: ${(props) => (props.size ?? "13px")};
+  width: ${(props) => props.width ?? "180px"};
+  font-size: ${(props) => props.size ?? "13px"};
   font-weight: ${(props) => (props.bold ? "700" : "400")};
-  background-color: ${(props) => (props.bgcolor ?? "#cccccc")};
-`;
-
-export const MazeRow = styled.div<MazeRowProps>`
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
-  height: calc(100% / ${(props) => props.size});
-`;
-
-export const CellComponent = styled.div`
-  background-color: ${(props) => props.color};
-  height: 100%;
-  width: 100%;
-`;
-
-export const Table = styled.div`
-  width: 100%;
-  height: 100%;
-`;
-
-export const Frame = styled.div`
-  border: 2px solid black;
-  width: 500px;
-  height: 500px;
-  overflow: hidden;
-  background-color: darkcyan;
+  background-color: ${(props) => props.bgcolor ?? "#cccccc"};
 `;
 
 export const Column = styled.div`
@@ -108,6 +81,13 @@ export const Column = styled.div`
   width: 500px;
 `;
 
+export const InnerColumn = styled.div<ColumnProps>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: ${(props) => props.width ?? "200px"};
+`;
+
 export const Timer = styled.div`
   font-size: 20px;
   left: 198px;
@@ -116,9 +96,16 @@ export const Timer = styled.div`
 `;
 
 export const ErrorSize = styled.h4`
-  margin-left: 10px;
   font-weight: 500;
   color: red;
   font-size: 16px;
   font-style: italic;
+  height: 100%;
+  margin: 0px;
+`;
+
+export const ErrorContainer = styled.div`
+  margin-top: 0px;
+  margin-left: 175px;
+  height: 20px;
 `;

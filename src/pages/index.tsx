@@ -2,15 +2,13 @@ import Head from "next/head";
 import { Inter } from "next/font/google";
 import {
   Button,
-  CellComponent,
   Column,
+  ErrorContainer,
   ErrorSize,
-  Frame,
+  InnerColumn,
   InputNumberField,
   InputTextField,
-  MazeRow,
   Row,
-  Table,
   TextField,
   Timer,
   Title,
@@ -18,12 +16,13 @@ import {
 import { Maze, Cell, Position } from "../lib/maze";
 import { DepthSearchMaze } from "../lib/mazeDepthSearch";
 import React, { useState, useRef, useEffect } from "react";
-import WinModal from "../components/WinModal/WinModal";
+import WinModal from "../components/WinModal/winModal";
 import { msToMinutes } from "@/utils/formatter";
+import { Grid } from "@/components/Grid/grid";
 
 const inter = Inter({ subsets: ["latin"] });
 
-interface GridProps {
+export interface MazeProps {
   maze: Cell[][];
   player?: Position;
   end?: Position;
@@ -34,7 +33,7 @@ interface RightPathI {
 }
 
 export default function Home() {
-  const [mazeState, setMazeState] = useState<GridProps>({
+  const [mazeState, setMazeState] = useState<MazeProps>({
     maze: [],
     player: { x: 1, y: 1 },
     end: { x: 1, y: 1 },
@@ -45,75 +44,18 @@ export default function Home() {
   const [errorSizeState, setErrorSizeState] = useState(false);
   const [showWinModal, setShowWinModal] = useState(false);
   const [timerState, setTimerState] = useState(0);
-  const [rightPath, setRightPath] = useState<RightPathI>({ path: [] })
+  const [rightPath, setRightPath] = useState<RightPathI>({ path: [] });
 
   const ref = useRef<HTMLInputElement>(null);
 
-  const Grid: React.FC = () => {
-    const rows = [];
-    const currentMaze: Cell[][] = mazeState.maze;
-    if (currentMaze) {
-      for (let i = 0; i < currentMaze.length; i++) {
-        const cols = [];
-        for (let j = 0; j < currentMaze[i].length; j++) {
-          cols.push(
-            <CellComponent key={`${i}-${j}`} color={getCellColor(i, j)} />
-          );
-        }
-        rows.push(
-          <MazeRow size={actualSize} key={i}>
-            {cols}
-          </MazeRow>
-        );
-      }
-    }
-    return (
-      <Frame>
-        <Table
-          onClick={() => {
-            if (ref.current) {
-              ref.current.focus();
-            }
-          }}
-        >
-          {rows}
-        </Table>
-      </Frame>
-    );
-  };
-
-  function getCellColor(i: number, j: number): string {
-    const player = mazeState.player!;
-    const end = mazeState.end!;
-    const cell = mazeState.maze[i][j];
-
-
-    if (
-      player.x === end.x &&
-      player.y === end.y &&
-      i === player.x &&
-      j === player.y
-    ) {
-      return "blue";
-    } else if (i === end.x && j === end.y) {
-      return "green";
-    } else if (i === player.x && j === player.y) {
-      return "red";
-    } else if (rightPath.path.some(pos => pos.x == i && pos.y == j)) {
-      return "blue";
-    } else if (cell.isWall) {
-      return cell.isActive ? "white" : "darkcyan";
-    }
-    return "white";
-  }
-
   const onGenerateMaze = (createNew: Boolean) => {
-    if (sizeState % 2 == 0) {
-      setErrorSizeState(true);
-      return;
-    }
-    setActualSizeSize(sizeState);
     if (createNew) {
+      if (sizeState % 2 == 0) {
+        setErrorSizeState(true);
+        return;
+      }
+      setActualSizeSize(sizeState);
+
       const newMaze = new Maze(sizeState);
       newMaze.Main();
 
@@ -130,12 +72,11 @@ export default function Home() {
       });
     }
 
-
     if (ref.current) {
       ref.current.focus();
     }
 
-    setRightPath({ path: [] })
+    setRightPath({ path: [] });
     setShowWinModal(false);
     setTimerState(0);
   };
@@ -201,8 +142,8 @@ export default function Home() {
     const mazeSolver = new DepthSearchMaze(mazeState.maze);
 
     setRightPath({
-      path: mazeSolver.findRightPath()
-    })
+      path: mazeSolver.findRightPath(),
+    });
   }
 
   useEffect(() => {
@@ -215,8 +156,8 @@ export default function Home() {
   }, [timerState]);
 
   useEffect(() => {
-    onGenerateMaze(true)
-  }, [])
+    onGenerateMaze(true);
+  }, []);
 
   return (
     <>
@@ -227,9 +168,9 @@ export default function Home() {
         <link rel="icon" href="/labyrinth.png" />
       </Head>
 
-      <Title>React Maze</Title>
-
       <Column>
+        <Title>React Maze</Title>
+
         <Row>
           <TextField bold>Maze width/height: </TextField>
           <InputNumberField
@@ -238,47 +179,69 @@ export default function Home() {
               setMazeSize(Number(event.target.value));
             }}
           />
+        </Row>
+
+        <ErrorContainer>
           {errorSizeState ? (
             sizeState % 2 ? (
-              <ErrorSize>
-                Size must be
-                <br /> between 5 and 81
-              </ErrorSize>
+              <ErrorSize>Size must be between 5 and 81</ErrorSize>
             ) : (
-              <ErrorSize>
-                Size must be
-                <br /> an odd number
-              </ErrorSize>
+              <ErrorSize>Size must be an odd number</ErrorSize>
             )
           ) : (
             <></>
           )}
-        </Row>
+        </ErrorContainer>
 
-        <Row marginTop="5px">
-          <Button onClick={() => onGenerateMaze(true)} bold>Generate maze</Button>
+        <Row marginTop="15px">
+          <Button onClick={() => onGenerateMaze(true)} bold>
+            Generate maze
+          </Button>
         </Row>
 
         {showWinModal && <WinModal size={sizeState} time={timerState} />}
 
         <Row marginTop={"20px"}>
           <Timer>Timer: {msToMinutes(timerState)}</Timer>
-
         </Row>
-        <Grid />
+
+        <Grid
+          mazeInfo={mazeState}
+          mazeSize={actualSize}
+          onClick={() => {
+            if (ref.current) {
+              ref.current.focus();
+            }
+          }}
+          rightPath={rightPath.path}
+        />
 
         <Row marginTop="20px" justify="space-between">
-          <Button width="180px" size="12px" bgcolor="lightblue" onClick={() => onGenerateMaze(false)}>Reset same maze</Button>
-          <Button width="180px" size="12px" bgcolor="#ff9494" onClick={getRightPath}>Show right path</Button>
+          <Button
+            width="180px"
+            size="12px"
+            bgcolor="lightblue"
+            onClick={() => onGenerateMaze(false)}
+          >
+            Reset same maze
+          </Button>
+          <Button
+            width="180px"
+            size="12px"
+            bgcolor="#ff9494"
+            onClick={getRightPath}
+          >
+            Show right path
+          </Button>
         </Row>
 
-        <Row marginTop={"20px"}>
+        <Row marginTop={"30px"}>
           <TextField size="18px">
             Type A/W/S/D or the Arrow keys to walk through the path
           </TextField>
         </Row>
 
-        <Row>
+        <Row marginTop={"15px"}>
           <InputTextField
             ref={ref}
             onKeyDown={getMoveDirection}

@@ -15,10 +15,11 @@
 - [x] Create a "Restart same maze" button
 - [x] Button to surrender and show solution
 - [x] Algorithm to find the solution
+- [x] Refact code, separating in files and components
+- [x] Fix the Cumulative Layout Shift caused by the validation msg
 
 
 ## To do
-- Refact code, separating in files and components
 - Add random start and end positions
 - Improve the visual of the page
 - Add animations

@@ -1,7 +1,7 @@
 import { Modal, ModalText, ModalTitle } from "./styles";
 import { msToMinutes } from "@/utils/formatter";
 
-export interface WinModalProps {
+interface WinModalProps {
   size: number;
   time: number;
 }
