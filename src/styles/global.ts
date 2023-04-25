@@ -81,13 +81,6 @@ export const Column = styled.div`
   width: 500px;
 `;
 
-export const InnerColumn = styled.div<ColumnProps>`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: ${(props) => props.width ?? "200px"};
-`;
-
 export const Timer = styled.div`
   font-size: 20px;
   left: 198px;

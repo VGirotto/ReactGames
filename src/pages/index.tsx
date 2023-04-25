@@ -18,6 +18,7 @@ import React, { useState, useRef, useEffect } from "react";
 import WinModal from "../components/WinModal/winModal";
 import { msToMinutes } from "@/utils/formatter";
 import { Grid } from "@/components/Grid/grid";
+import AnimatedText from "@/components/AnimatedTexts/AnimatedText";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -45,6 +46,7 @@ export default function Home() {
   const [timerState, setTimerState] = useState(0);
   const [rightPath, setRightPath] = useState<RightPathI>({ path: [] });
   const [startPosition, setStartPosition] = useState<Position>({ x: 0, y: 0 });
+  const [labelText, setLabelText] = useState("");
 
   const ref = useRef<HTMLInputElement>(null);
 
@@ -66,12 +68,14 @@ export default function Home() {
         player: mazeProps.player,
         end: mazeProps.end,
       });
+      setLabelText(`${sizeState}x${sizeState} Maze`);
     } else {
       setMazeState({
         maze: mazeState.maze,
-        player: { x: 1, y: 1 },
+        player: startPosition,
         end: mazeState.end,
       });
+      setLabelText(`Restarted ${actualSize}x${actualSize}`);
     }
 
     if (ref.current) {
@@ -219,6 +223,15 @@ export default function Home() {
     onGenerateMaze(true);
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (labelText != "") {
+        setLabelText("");
+      }
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [labelText]);
+
   return (
     <>
       <Head>
@@ -260,6 +273,8 @@ export default function Home() {
         </Row>
 
         {showWinModal && <WinModal size={sizeState} time={timerState} />}
+
+        <AnimatedText text={labelText} active={labelText != ""} />
 
         <Row marginTop={"20px"}>
           <Timer>Timer: {msToMinutes(timerState)}</Timer>

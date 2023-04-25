@@ -18,16 +18,17 @@
 - [x] Refact code, separating in files and components
 - [x] Fix the Cumulative Layout Shift caused by the validation msg
 - [x] Add random start and end positions
+- [ ] Add animations
+  - [x] Show start of the maze (maybe display "21x21 Maze")
+  - [x] Word "Restarted" when clicked the restart button
+  - [ ] Win animations
 
 
 ## To do
+- Custom shapes of the player and the end
 - Improve the visual of the page
-- Add animations
-  - Show start of the maze (maybe display "21x21 Maze")
-  - Word "Restarted" when clicked the restart button
-  - Win animations
 - Dark/light mode
-
+- Use the maze code in the lib folder as an API
 
 ## Backlog
 - Loading circle (is necessary?)
