@@ -1,4 +1,12 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+import SVG from "react-inlinesvg";
+
+interface ConfettiProps {
+  origin: string;
+  rotate: string;
+  marginTop: number;
+  marginRight: number;
+}
 
 export const Modal = styled.div`
   position: fixed;
@@ -34,4 +42,30 @@ export const ModalText = styled.div`
   border-style: solid;
   border-color: black;
   border-width: 1px;
+`;
+
+const confettiAnimation = (margin: number) => keyframes`
+    from {
+      width: 10px;
+      margin-right: ${margin}px;
+    }
+    to {
+      width: 50px;
+      margin-right: ${margin - (margin >= 0 ? -20 : 20)}px;
+    }
+`;
+
+export const Confetti = styled.div<ConfettiProps>`
+  top: ${(props) => props.marginTop}px;
+  position: absolute;
+  background-color: orange;
+  height: 5px;
+  animation-name: ${(props) => confettiAnimation(props.marginRight)};
+  animation-duration: 1.5s;
+  animation-iteration-count: 3;
+  transform-origin: ${(props) => props.origin};
+  transform: rotate(${(props) => props.rotate});
+  margin-right: -250px;
+  z-index: 1001;
+  border-radius: 50px;
 `;
