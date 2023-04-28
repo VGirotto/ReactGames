@@ -1,6 +1,6 @@
 import React from "react";
 import { Cell, Position } from "@/lib/maze";
-import { CellComponent, Frame, MazeRow, Table } from "./styles";
+import { CellComponent, EndCell, Frame, MazeRow, Player, PlayerEyes, PlayerLegs, Table } from "./styles";
 import { MazeProps } from "@/pages/index";
 
 interface GridProps {
@@ -18,7 +18,7 @@ export const Grid: React.FC<GridProps> = (props: GridProps) => {
       const cols = [];
       for (let j = 0; j < currentMaze[i].length; j++) {
         cols.push(
-          <CellComponent key={`${i}-${j}`} color={getCellColor(i, j)} />
+          getCell(i, j)
         );
       }
       rows.push(
@@ -27,6 +27,24 @@ export const Grid: React.FC<GridProps> = (props: GridProps) => {
         </MazeRow>
       );
     }
+  }
+
+  function getCell(i: number, j: number) {
+    const player = props.mazeInfo.player!;
+    const end = props.mazeInfo.end!;
+    const cell = props.mazeInfo.maze[i][j];
+
+    if (i === player.x && j === player.y) {
+      return (
+        <Player bgcolor={getCellColor(i, j)}>
+          <PlayerEyes />
+          <PlayerLegs />
+        </Player>
+      );
+    } else if (i === end.x && j === end.y) {
+      return <EndCell bgcolor={getCellColor(i, j)} />;
+    }
+    return <CellComponent key={`${i}-${j}`} color={getCellColor(i, j)} />;
   }
 
   function getCellColor(i: number, j: number): string {
@@ -42,9 +60,9 @@ export const Grid: React.FC<GridProps> = (props: GridProps) => {
     ) {
       return "blue";
     } else if (i === end.x && j === end.y) {
-      return "#Bf11ab";
+      return "purple";
     } else if (i === player.x && j === player.y) {
-      return "red";
+      return "white";
     } else if (props.rightPath.some((pos) => pos.x == i && pos.y == j)) {
       return "blue";
     } else if (cell.isWall) {

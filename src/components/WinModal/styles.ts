@@ -1,5 +1,4 @@
 import styled, { keyframes } from "styled-components";
-import SVG from "react-inlinesvg";
 
 interface ConfettiProps {
   origin: string;
@@ -57,7 +56,7 @@ const confettiAnimation = (margin: number) => keyframes`
 
 export const Confetti = styled.div<ConfettiProps>`
   top: ${(props) => props.marginTop}px;
-  position: absolute;
+  position: fixed;
   background-color: orange;
   height: 5px;
   animation-name: ${(props) => confettiAnimation(props.marginRight)};
@@ -65,7 +64,6 @@ export const Confetti = styled.div<ConfettiProps>`
   animation-iteration-count: 3;
   transform-origin: ${(props) => props.origin};
   transform: rotate(${(props) => props.rotate});
-  margin-right: -250px;
   z-index: 1001;
   border-radius: 50px;
 `;

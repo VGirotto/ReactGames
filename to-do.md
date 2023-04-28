@@ -22,10 +22,10 @@
   - [x] Show start of the maze (maybe display "21x21 Maze")
   - [x] Word "Restarted" when clicked the restart button
   - [ ] Win animations
+- [x] Custom shapes of the player and the end
 
 
 ## To do
-- Custom shapes of the player and the end
 - Improve the visual of the page
 - Dark/light mode
 - Use the maze code in the lib folder as an API
