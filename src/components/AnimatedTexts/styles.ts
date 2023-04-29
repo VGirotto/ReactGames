@@ -12,6 +12,7 @@ export const TextContainer = styled.div`
   top: 40%;
   margin-left: auto;
   margin-right: auto;
+  z-index: 1005;
 `;
 
 const animation = keyframes`

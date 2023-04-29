@@ -18,15 +18,15 @@
 - [x] Refact code, separating in files and components
 - [x] Fix the Cumulative Layout Shift caused by the validation msg
 - [x] Add random start and end positions
-- [ ] Add animations
+- [x] Add animations
   - [x] Show start of the maze (maybe display "21x21 Maze")
   - [x] Word "Restarted" when clicked the restart button
-  - [ ] Win animations
+  - [x] Win animations
 - [x] Custom shapes of the player and the end
+- [ ] Improve the visual of the page
 
 
 ## To do
-- Improve the visual of the page
 - Dark/light mode
 - Use the maze code in the lib folder as an API
 
@@ -35,9 +35,7 @@
 - Localization (add other languages)
 - Optimize performance in large maze (?)
 - Add responsiveness
-- Show buttons to move when on mobile (?)
-  
-
-## Doesn't make sense
-- Save player time and maze size
-- Ranking of times per size
+  -  Put button on the sides in desktop
+  -  Fix Win Animation positions
+  -  Don't scroll up/down if maze fit the screen
+  -  Add buttons on screen to play on mobile
