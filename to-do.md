@@ -24,6 +24,11 @@
   - [x] Win animations
 - [x] Custom shapes of the player and the end
 - [ ] Improve the visual of the page
+  - [ ] Add menu bar
+  - [ ] Add footer
+  - [ ] Add home page
+  - [ ] Customize buttons
+  - [ ] Customize texts
 
 
 ## To do
